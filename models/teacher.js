@@ -1,10 +1,11 @@
 const db = require("../db");
 
-// 1. Define the Schema object first
+const AutoIncrement = require("mongoose-sequence")(db); 
+
 const teacherSchema = new db.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  teacherID: { type: Number, unique: true }, 
+  firstName: String,
+  lastName: String,
+
   email: { type: String, unique: true, lowercase: true },
   loginName: { type: String, unique: true },
   password: String,
@@ -12,20 +13,7 @@ const teacherSchema = new db.Schema({
 });
 
 
-teacherSchema.pre("validate", async function (next) {
-
-  if (this.isNew && !this.teacherID) {
-    try {
-      const Teacher = db.model("Teacher"); // Get model reference safely
-      const lastTeacher = await Teacher.findOne({}, { teacherID: 100 }, { sort: { teacherID: -1 } });
-      this.teacherID = lastTeacher && lastTeacher.teacherID ? lastTeacher.teacherID + 1 : 1;
-    } catch (err) {
-      return next(err);
-    }
-  }
-  next();
-});
-
+teacherSchema.plugin(AutoIncrement, { inc_field: 'teacherID' });
 
 const Teacher = db.model("Teacher", teacherSchema);
 

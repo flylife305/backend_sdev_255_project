@@ -191,9 +191,9 @@ router.delete('/Student/:id', async function(req, res) {
    }
 });
 
-router.delete('/teacher/:id', async function(req, res) {
+router.delete('/:id', async function(req, res) {
    try {
-      const result = await Teacher.deleteOne({ _id: req.params.id });
+      const result = await Teacher.deleteOne({ _id: req.query._id });
       if (result.deletedCount === 0) {
          res.sendStatus(404);
       } 
