@@ -12,6 +12,7 @@ app.use(cors())
 app.use(express.json())
 
 const router = express.Router();
+const secret = "The_ultra_secret_key"; 
 
 //get all entries in teacher, student, courses
 router.get("/course", async function(req,res){
