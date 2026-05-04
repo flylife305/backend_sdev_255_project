@@ -113,7 +113,7 @@ router.post("/teacher", async function(req,res){
         const salt = await bcrypt.genSalt(10);
         teacherData.password = await bcrypt.hash(teacherData.password, salt);
 
-        const teacher = new Teacher(studentData);
+        const teacher = new Teacher(teacherData);
         await teacher.save();
         res.status(201).json(teacher);
     } catch (err) {
