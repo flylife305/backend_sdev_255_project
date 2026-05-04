@@ -1,4 +1,3 @@
-javascript
 const db = require("../db");
 
 const Teacher = db.model("Teacher", {
