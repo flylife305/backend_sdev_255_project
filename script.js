@@ -92,7 +92,7 @@ router.post("/course", async function(req,res){
 router.post("/Students", async function(req, res) {
     try {
         const studentData = req.body;
-        
+
         const salt = await bcrypt.genSalt(10);
         studentData.password = await bcrypt.hash(studentData.password, salt);
 
@@ -205,13 +205,11 @@ router.post("/login", async function(req, res) {
     try {
         const { loginName, password } = req.body;
 
-        // 1. Search Teachers
-        let user = await Teacher.findOne({ loginName: loginName });
+        let user = await Teacher.findOne({ loginName });
         let role = "teacher";
 
-        // 2. Search Students if not a Teacher
         if (!user) {
-            user = await Student.findOne({ loginName: loginName });
+            user = await Student.findOne({ loginName });
             role = "student";
         }
 
@@ -219,11 +217,12 @@ router.post("/login", async function(req, res) {
             return res.status(401).json({ error: "Bad username" });
         }
 
-        // 3. Check password
-        if (user.password === password) {
-            // Include username and role in the token
+        // Use bcrypt to compare the plain text password with the hash in DB
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (isMatch) {
             const token = jwt.sign({ loginName: user.loginName, role: role, id: user._id }, secret);
-            res.json({ token: token, role: role });
+            res.json({ token, role });
         } else {
             res.status(401).json({ error: "Bad password" });
         }
