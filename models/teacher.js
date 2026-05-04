@@ -1,16 +1,18 @@
+javascript
 const db = require("../db");
 
 const Teacher = db.model("Teacher", {
-  firstName: String,
-  lastName: String,
-  teacherID: Number,
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  teacherID: { type: Number, required: true, unique: true },
   email: { type: String, unique: true, lowercase: true },
   loginName: { type: String, unique: true },
   password: String,
   role: { type: String, default: "teacher" }
 });
 
-Teacher.schema.pre("save", async function (next) {
+
+Teacher.schema.pre("validate", async function (next) {
   if (!this.isNew) return next();
 
   try {
