@@ -3,6 +3,7 @@ const Course = require("./models/course")
 const Student = require("./models/Students")
 const Teacher = require("./models/teacher")
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 var cors = require("cors")
 
