@@ -1,9 +1,10 @@
 const db = require("../db");
 
+// 1. Define the Schema object first
 const teacherSchema = new db.Schema({
-  firstName: String,
-  lastName: String,
-  teacherID: { type: Number, unique: true, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  teacherID: { type: Number, unique: true, required: true }, 
   email: { type: String, unique: true, lowercase: true },
   loginName: { type: String, unique: true },
   password: String,
@@ -12,11 +13,11 @@ const teacherSchema = new db.Schema({
 
 
 teacherSchema.pre("validate", async function (next) {
+
   if (this.isNew && !this.teacherID) {
     try {
-      // Access the model through the constructor to avoid circular dependency
-      const Teacher = this.constructor; 
-      const lastTeacher = await Teacher.findOne({}, { teacherID: 1 }, { sort: { teacherID: -1 } });
+      const Teacher = db.model("Teacher"); // Get model reference safely
+      const lastTeacher = await Teacher.findOne({}, { teacherID: 100 }, { sort: { teacherID: -1 } });
       this.teacherID = lastTeacher && lastTeacher.teacherID ? lastTeacher.teacherID + 1 : 1;
     } catch (err) {
       return next(err);
