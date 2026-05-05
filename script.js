@@ -168,53 +168,59 @@ router.put("/course/:id", async(req,res) => {
     
 })
 
-router.put("/Students/:id", async(req,res) => {
+router.put("/Students/:id", async (req, res) => {
     try {
-    const searchID = req.params.id;
-    const studentData = req.body;
+        const searchID = req.params.id;
+        const studentData = req.body; 
 
+       
         if (studentData.password) {
-                const salt = await bcrypt.genSalt(10);
-                studentData.password = await bcrypt.hash(updateData.password, salt);
+            const salt = await bcrypt.genSalt(10);
+            studentData.password = await bcrypt.hash(studentData.password, salt);
         }
-    const result = await Student.updateOne(
-      { 
-        $or: [ 
-          { studentID: Number(searchID) || 0 }, 
-          { _id: searchID.length === 24 ? searchID : null } 
-        ] 
-      }, 
-      studentData
-    );
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Student not found" });
+        const query = searchID.length === 24 
+            ? { _id: searchID } 
+            : { studentID: Number(searchID) };
+
+        const result = await Student.updateOne(query, studentData);
+
+        if (result.matchedCount === 0) return res.status(404).send("Student not found");
+        res.sendStatus(204);
+    } catch (err) {
+        res.status(400).send(err.message);
     }
-
-    res.sendStatus(204);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
 });
 
-router.put("/teacher/:id", async(req,res) => {
-    try{
-        const teacherData = req.body
+router.put("/teacher/:id", async (req, res) => {
+    try {
+        const searchID = req.params.id;
+        const teacherData = req.body; // Use teacherData consistently
+
+        // FIX: Use teacherData instead of updateData
         if (teacherData.password) {
             const salt = await bcrypt.genSalt(10);
-            teacherData.password = await bcrypt.hash(updateData.password, salt);
+            teacherData.password = await bcrypt.hash(teacherData.password, salt);
         }
-        const result = await Teacher.updateOne({_id :req.params.id}, teacherData)
-        if (result.matchedCount === 0){
-            return res.status(404).json({ message :"Teacher not found"});
+
+        // Determine if we are searching by MongoDB hex _id or numeric teacherID
+        const query = searchID.length === 24 
+            ? { _id: searchID } 
+            : { teacherID: Number(searchID) };
+
+        const result = await Teacher.updateOne(query, teacherData);
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: "Teacher not found" });
         }
-        res.sendStatus(204)
+
+        res.sendStatus(204);
+    } catch (err) {
+        // This will now send the specific error message (like "teacherData is not defined") 
+        // to your console to help you debug.
+        res.status(400).send(err.message);
     }
-    catch(err){
-        res.status(400).send(err.message)
-    }
-    
-})
+});
 
 //Finds and deletes one entry out of teacher, course, and student
 router.delete('/course/:id', async function(req, res) {
