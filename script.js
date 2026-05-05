@@ -157,16 +157,29 @@ router.put("/course/:id", async(req,res) => {
 })
 
 router.put("/Students/:id", async(req,res) => {
-    try{
-        const student = req.body
-        await Student.updateOne({_id :req.params.id}, student)
-        res.sendStatus(204)
+    try {
+    const searchID = req.params.id;
+    const studentData = req.body;
+
+    const result = await Student.updateOne(
+      { 
+        $or: [ 
+          { studentID: Number(searchID) || 0 }, 
+          { _id: searchID.length === 24 ? searchID : null } 
+        ] 
+      }, 
+      studentData
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Student not found" });
     }
-    catch(err){
-        res.status(400).send(err.message)
-    }
-    
-})
+
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 router.put("/teacher/:id", async(req,res) => {
     try{
