@@ -173,7 +173,7 @@ router.put("/Students/:id", async(req,res) => {
     const searchID = req.params.id;
     const studentData = req.body;
 
-        if (updateData.password) {
+        if (studentData.password) {
                 const salt = await bcrypt.genSalt(10);
                 studentData.password = await bcrypt.hash(updateData.password, salt);
         }
@@ -199,12 +199,12 @@ router.put("/Students/:id", async(req,res) => {
 
 router.put("/teacher/:id", async(req,res) => {
     try{
-        const teacher = req.body
-        if (updateData.password) {
+        const teacherData = req.body
+        if (teacherData.password) {
             const salt = await bcrypt.genSalt(10);
             teacherData.password = await bcrypt.hash(updateData.password, salt);
         }
-        const result = await Teacher.updateOne({_id :req.params.id}, teacher)
+        const result = await Teacher.updateOne({_id :req.params.id}, teacherData)
         if (result.matchedCount === 0){
             return res.status(404).json({ message :"Teacher not found"});
         }
