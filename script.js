@@ -228,7 +228,11 @@ router.post("/login", async function(req, res) {
 
         if (isMatch) {
             const token = jwt.sign({ loginName: user.loginName, role: role, id: user._id }, secret);
-            res.json({ token, role });
+            res.json({ token,
+                 role,
+                 firstName : user.firstName,
+                 userID: role === "teacher" ? user.teacherID : user.studentID 
+                 });
         } else {
             res.status(401).json({ error: "Bad password" });
         }
