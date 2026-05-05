@@ -156,7 +156,7 @@ router.put("/course/:id", async(req,res) => {
     
 })
 
-router.put("/Student/:id", async(req,res) => {
+router.put("/Students/:id", async(req,res) => {
     try{
         const student = req.body
         await Student.updateOne({_id :req.params.id}, student)
@@ -197,7 +197,7 @@ router.delete('/course/:id', async function(req, res) {
    }
 });
 
-router.delete('/Student/:id', async function(req, res) {
+router.delete('/Students/:id', async function(req, res) {
    try {
       const result = await Student.deleteOne({ _id: req.params.id });
       if (result.deletedCount === 0) {
